@@ -30,11 +30,11 @@ class Location(BaseModel):
 class Tour(BaseModel):
     name = models.CharField(max_length=255)
     duration = models.IntegerField()
-    children_price = models.DecimalField
-    adult_price = models.DecimalField
+    children_price = models.DecimalField(max_digits=10, decimal_places=2)
+    adult_price = models.DecimalField(max_digits=10, decimal_places=2)
     description = RichTextField()
-    number_rate = models.FloatField
-    max_person = models.IntegerField
+    number_rate = models.FloatField(null=True)
+    max_person = models.IntegerField()
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
 #    user = models.ManyToManyField(User, through='UserTour')
@@ -47,14 +47,14 @@ class UserTour(BaseModel):
     number_children = models.IntegerField()
     date_start = models.DateTimeField()
     date_finish = models.DateTimeField()
-    total_price = models.DecimalField
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.IntegerField()
     tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class TourImage(BaseModel):
-    value = models.ImageField(upload_to='users/%Y/%m', null=True)
+    value = models.ImageField(upload_to='tour_image/%Y/%m', null=True)
     tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 
 
