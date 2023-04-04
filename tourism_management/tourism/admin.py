@@ -14,6 +14,8 @@ class TourForm(forms.ModelForm):
 
 
 class TourImageForm(forms.ModelForm):
+#    value = forms.ImageField(widget=CKEditorUploadingWidget)
+
     class Meta:
         model = TourImage
         fields = '__all__'
@@ -25,11 +27,21 @@ class UserForm(forms.ModelForm):
         fields = '__all__'
 
 
+class TourImageInlineAdmin(admin.StackedInline):
+    model = TourImage
+    pk_name = 'tour'
+    readonly_fields = ['image']
+
+    def image(self, tour_image):
+        return mark_safe("<img src='/static/{}' width='120' />".format(tour_image.value))
+
+
 class TourAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'duration', 'children_price', 'adult_price', 'number_rate', 'location']
     search_fields = ['name', 'duration', 'children_price', 'adult_price', 'number_rate', 'location__name']
     list_filter = ['duration', 'number_rate', 'location']
     form = TourForm
+    inlines = (TourImageInlineAdmin, )
 
 
 class TourImageAdmin(admin.ModelAdmin):
