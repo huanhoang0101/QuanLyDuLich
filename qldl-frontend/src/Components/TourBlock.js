@@ -16,7 +16,7 @@ const Tour = () => {
           <Card.Img variant="top" src={img} />
           <Card.Body>
             <Card.Title>
-              <Link style={{color:"black", textDecoration:"none"}} to="/tours">
+              <Link style={{color:"black", textDecoration:"none"}} to="/tour/1">
                 Du lịch Hè - Tour Phú Quốc - Grand World - Vinwonders từ Sài Gòn 2023
               </Link>
             </Card.Title>

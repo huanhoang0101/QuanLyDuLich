@@ -1,13 +1,19 @@
 import React, { state } from 'react';
 import { Button, Col, Row } from 'react-bootstrap';
 import DetailTourBlock from '../Components/DetailTourBlock';
-import TourBlock from '../Components/TourBlock';
 import slide2 from '../image/slide/slide2.png'
-import slide1 from '../image/slide/slide1.jpg'
 import TourImage from '../Components/TourImage';
 import Form from 'react-bootstrap/Form';
+import CommentForm from '../Components/Comment';
+import PreviousButton from '../Components/PreviousButtonn';
+import NextButton from '../Components/NextButton';
+import CommentBlock from '../Components/BlockComment';
+import OrderTourForm from '../Components/OrderTourForm';
 
 const DetailTour = () => {
+
+  const [orderForm, setOrderForm] = React.useState(false);
+
   const arrPages = [1, 2, 3, 4, 5, 6,7,8,9,10,11,12];
   return (
     <>
@@ -20,9 +26,13 @@ const DetailTour = () => {
           <Row style={{borderBottom: "1px solid gray", paddingBottom: "20px", margin:"20px", marginTop:"10px", marginBottom:"10px"}}>
             <Col xs={6}>
               <div style={{width:"150px", margin:"auto"}}>
-                <Button variant="dark" type="button" style={{width:"100%", borderRadius:"0px"}}>
+                <Button variant="dark"  onClick={() => setOrderForm(true)} type="button" style={{width:"100%", borderRadius:"0px"}}>
                   Register
                 </Button>
+                <OrderTourForm
+                  show={orderForm}
+                  onHide={() => setOrderForm(false)}
+                />
               </div>
             </Col>
             <Col xs={6}>
@@ -58,23 +68,31 @@ const DetailTour = () => {
           </p>
         </Col>
       </Row>
-      <Row>
+      <Row style={{ padding:"20px"}}>
         <Col xs={8}>
-          <Row>
-            <span>
-              Lượt thích : 
-            </span>
-            <span>
-              1 tỉ
-            </span>
+          <Row style={{marginLeft: "10px", width: "300px"}}>
+            <Col>
+                <strong>
+                  Lượt thích : 
+                </strong>
+            </Col>
+            <Col>
+              <span>
+                1 tỉ
+              </span>
+            </Col>
           </Row>
-          <Row>
-            <span>
-              Rating :
-            </span>
-            <span>
-              3.5/5
-            </span>
+          <Row  style={{marginLeft: "10px", width: "300px", marginTop:"25px"}}>
+            <Col>
+              <strong>
+                Rating :
+              </strong>
+            </Col>
+            <Col>
+              <span style={{fontSize:"35px"}}>
+                3.5/5
+              </span>
+            </Col>
           </Row>
         </Col>
         <Col xs={4}>
@@ -92,6 +110,18 @@ const DetailTour = () => {
           </Form>
         </Col>
       </Row>
+      <Row style={{ margin:"20px", borderTop: "1px solid gray", padding:"10px"}}>
+        <CommentForm/>
+        {arrPages.map(function(element) {
+                          return (
+                            <CommentBlock/>
+                          );
+            })}
+      </Row>
+      <div style={{margin: "20px", borderTop: "1px solid black", paddingTop: "20px"}}>
+      <PreviousButton/>
+      <NextButton/>
+      </div>
     </>
   );
 

@@ -1,7 +1,9 @@
 import React, { state } from 'react';
 import Row from 'react-bootstrap/Row';
 import BlogBlock from '../Components/BlogBlock';
-
+import {
+  Link
+} from 'react-router-dom';
 const NewBlogs = () => {
 
 
@@ -19,7 +21,8 @@ const NewBlogs = () => {
       </Row>
       <div style={{width:"100%"}}>
         <div style={{width: "200px", margin: "auto"}}>
-          <button className='btn-all-blogs'>See All Blogs</button>
+        
+          <button className='btn-all-blogs'><Link style={{color:"white", textDecoration:"none"}} to="/blogs">See All Blogs</Link></button>
         </div>
       </div>
     </>

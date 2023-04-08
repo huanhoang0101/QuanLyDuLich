@@ -1,5 +1,8 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import {
+  Link
+} from 'react-router-dom';
 
 function BlogBlock() {
   return (
@@ -12,7 +15,9 @@ function BlogBlock() {
           With supporting text below as a natural lead-in to additional content.
           With supporting text below as a natural lead-in to additional content.
         </Card.Text>
-        <Button style={{float:"right"}} variant="info">Go Detail Blog</Button>
+        <Button style={{float:"right"}} variant="info">
+          <Link style={{color:"black", textDecoration:"none"}} to="/blog/1">Go Detail Blog</Link>
+        </Button>
       </Card.Body>
     </Card>
   );

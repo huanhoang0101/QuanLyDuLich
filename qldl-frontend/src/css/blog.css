@@ -1,0 +1,20 @@
+.like-icon{
+    font-size: 24px;
+    width: 50px;
+    text-align: center;
+    cursor: pointer;
+    color: rgb(0, 188, 0)
+}
+.like-icon:hover{
+    color: rgb(0, 123, 0)
+}
+.unlike-icon{
+    font-size: 24px;
+    width: 50px;
+    text-align: center;
+    cursor: pointer;
+    color: rgb(188, 160, 0)
+}
+.unlike-icon:hover{
+    color: rgb(123, 117, 0)
+}
