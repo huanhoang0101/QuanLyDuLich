@@ -5,6 +5,9 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('tour', views.TourViewSet)
+router.register('tour', views.TourDetailViewSet)
+router.register('post', views.PostViewSet)
+router.register('user', views.UserViewSet)
 
 
 urlpatterns = [

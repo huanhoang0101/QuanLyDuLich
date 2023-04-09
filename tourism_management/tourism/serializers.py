@@ -2,7 +2,14 @@ from .models import Tour, User, TourImage, Location, UserTour, Post, TourComment
 from rest_framework import serializers
 
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ['id', 'name']
+
 class TourSerializer(serializers.ModelSerializer):
+    location = LocationSerializer()
+
     class Meta:
         model = Tour
         fields = ['id', 'name', 'location', 'children_price', 'adult_price', 'duration', 'max_person']
@@ -12,6 +19,18 @@ class TourDetailSerializer(TourSerializer):
     class Meta:
         model = TourSerializer.Meta.model
         fields = TourSerializer.Meta.fields + ['description', 'number_rate']
+
+
+class TourImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TourImage
+        fields = ['id', 'value']
+
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'content', 'number_like', 'created_date']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -30,9 +49,3 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
-
-
-class TourImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TourImage
-        fields = ['id', 'value']

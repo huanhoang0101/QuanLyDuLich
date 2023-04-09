@@ -55,7 +55,7 @@ class UserTour(BaseModel):
 
 class TourImage(BaseModel):
     value = models.ImageField(upload_to='tour_image/%Y/%m', null=True)
-    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE, related_name='image')
 
 
 class TourComment(BaseModel):
