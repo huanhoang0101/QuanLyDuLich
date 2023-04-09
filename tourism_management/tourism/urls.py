@@ -1,7 +1,12 @@
-
-from django.urls import path
+from django.contrib import admin
+from django.urls import path, re_path, include
 from . import views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register('tour', views.TourViewSet)
+
 
 urlpatterns = [
-    path('', views.index, name="index"),
+    path('', include(router.urls)),
 ]

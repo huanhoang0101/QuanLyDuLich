@@ -1,3 +1,7 @@
 #pip install mysqlclient
 #pip install django-ckeditor
 #pip install pillow
+#pip install django-ckeditor
+#pip install djangorestframework
+#pip install drf-yasg
+#pip install django-oauth-toolkit
