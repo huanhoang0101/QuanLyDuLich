@@ -21,6 +21,7 @@ import { MyUserContext } from './configs/MyContext';
 import EditProfile from './Layouts/EditProfile';
 import EditPassword from './Layouts/EditPassword';
 import OrderHistory from './Layouts/OrderHistory';
+import 'font-awesome/css/font-awesome.min.css';
 
 
 function App() {

@@ -3,60 +3,56 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import '../css/login.css'
 import cookie from 'react-cookies';
+import API, { authAPI, endpoints } from "../configs/API"
 import {
   Link, Navigate
 } from 'react-router-dom';
 import { MyUserContext } from "../configs/MyContext"
-
+import Loading from "../Components/Loading"
 
 function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
-  const [err, setErr] = useState()
+  const [loading, setLoading] = useState(false)
   const [user, dispatch] = useContext(MyUserContext)
   const [validated, setValidated] = useState(false);
-
   const handleSubmit = (event) => {
     const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
     event.preventDefault();
-    setValidated(true);
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+      setValidated(true);
+      return;
+    }
+    
     const process = async () => {
       try {
-          // let res = await API.post(endpoints['login'], {
-          //     "username": username,
-          //     "password": password,
-          //     "client_id": "Vbe8euZZQJoWJ2UzW9wDThg4hJEZHHbhFmnfj7UR",
-          //     "client_secret": "cVm4w4hSdy4MtwbP4KuNgXkGPeQJ9yrQdBvXHGR6b3e97F2bYqQ81XJ49FEufzjcw4SKwpuOZQiCLsNelHY1MkuYTGBRcSqtWmSlebSUk27WfyDskCB2VeCQihnEKdZ2",
-          //     "grant_type": "password"
-          // })
+          let res = await API.post(endpoints['login'], {
+              "username": username,
+              "password": password,
+              "client_id": "QmvZpd2Inv3wtZxheYgm0dEWZQfw3dvmmVKUA9hI",
+              "client_secret": "Ayi9kIkmazUNSPqAEYkficp7FymA3iCiwbpqMVm5CgtxidhD8TRqCIfRQgJQ0E7KPuQRcgwsUnHdvy5c1NYLrTrFGgClQ1QMnlejDdsDxEAnSNrotoQ7yHlZagHLZdkn",
+              "grant_type": "password"
+          })
 
-          // cookie.save('access-token', res.data.access_token)
-          cookie.save('access-token', 123456)
+          cookie.save('access-token', res.data.access_token)
 
-          let user = "user"
-          cookie.save('current-user', user)
+          let user = await authAPI().get(endpoints['current-user'])
+          cookie.save('current-user', user.data)
 
           dispatch({
               "type": "login", 
-              "payload": user
+              "payload": user.data
           })
       } catch (ex) {
           console.error(ex)
-          setErr('Username hoặc Password không hợp lệ!')
       } finally {
+          setLoading(false)
       }
     }
-
-    if (username === "" || password === "")
-        setErr("Phải nhập username và password!")
-    else {
-        process()
-    }
+    setLoading(true);
+    process();
   };
   if (user !== null)
     return <Navigate to="/" />
@@ -93,9 +89,13 @@ function Login() {
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
             <Form.Check type="checkbox" label="Show Password" />
           </Form.Group>
+          {loading
+          ?
+          <Loading /> 
+          :
           <Button style={{float:"right"}} variant="primary" type="submit">
             Login
-          </Button>
+          </Button>}
           <div style={{marginTop:"50px"}}>
             <p>Forgot Password</p>
             <Button  variant="primary" type="button">
