@@ -21,9 +21,9 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Course API",
+        title="Tourism API",
         default_version='v1',
-        description="APIs for CourseApp",
+        description="APIs for TourismApp",
         contact=openapi.Contact(email="1951012034huan@ou.edu.vn"),
         license=openapi.License(name="Hoàng Minh Huân"),
     ),
