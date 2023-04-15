@@ -52,3 +52,7 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView,
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
     parser_classes = [parsers.MultiPartParser, ]
+
+    @action(methods=['get'], detail=False, url_path='current-user')
+    def current_user(self, request):
+        return Response(UserSerializer(request.user).data)
