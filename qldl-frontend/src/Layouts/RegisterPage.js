@@ -68,7 +68,7 @@ function Register() {
             <Form.Select >
               <option>Male</option>
               <option>Female</option>
-          </Form.Select>
+            </Form.Select>
           </Form.Group>
           <Form.Group style={{height:"95px"}} className="mb-3" controlId="validationCustomPassword">
             <Form.Label>Password</Form.Label>

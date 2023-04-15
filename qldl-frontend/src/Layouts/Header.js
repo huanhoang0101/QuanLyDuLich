@@ -1,23 +1,25 @@
-import React, { useState } from 'react'; 
+import React, { useContext, useState } from 'react';
 import '../css/header.css'
 import logo from '../image/logo/logo.png'
 import {
-    Link
+    Link,
+    Navigate
 } from 'react-router-dom';
+import { MyUserContext } from "../configs/MyContext";
+import cookie from 'react-cookies';
+
 
 
 const Header = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, dispatch] = useContext(MyUserContext)
 
-    // Function to handle user login
-    const handleLogin = () => {
-    setIsLoggedIn(true);
+    const logout = () => {
+        dispatch({
+            "type": "logout"
+        })
     }
 
-    // Function to handle user logout
-    const handleLogout = () => {
-    setIsLoggedIn(false);
-    }
+
     return (
         <div className="ct-header">
             <div class="logo">
@@ -35,10 +37,17 @@ const Header = () => {
                 </p>
             </div>
             <div className="header-menu">
-                {isLoggedIn ? (
+                {user ? (
                     <div className='hadLogin'>
-                        <button className='btn-logout' onClick={handleLogout}>Logout</button>
-                        <span>User Name</span>
+                        <button className='btn-logout' onClick={logout}>Logout</button>
+                                           
+                            <span>
+                            <Link style={{color:"rgb(87, 87, 87)", textDecoration:"none"}} to="/profile">     
+                                User Name
+                                </Link>
+                            </span>
+
+
                         <img src={logo} width="60"></img>
                     </div>
                 ) : (
