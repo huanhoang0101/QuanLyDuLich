@@ -6,3 +6,4 @@
 #pip install drf-yasg
 #pip install django-oauth-toolkit
 #python -m pip install django-cors-headers
+pip install cloudinary
