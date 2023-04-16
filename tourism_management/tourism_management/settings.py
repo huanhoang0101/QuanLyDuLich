@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+#import cloudinary
+#import cloudinary.uploader
+import cloudinary.api
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'oauth2_provider',
     'corsheaders',
+    'cloudinary'
 ]
 
 REST_FRAMEWORK = {
@@ -145,3 +149,9 @@ CKEDITOR_UPLOAD_PATH = "tour_image/"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+cloudinary.config(
+  cloud_name = "dnrpggpn0",
+  api_key = "719655946352422",
+  api_secret = "5L0sUTPsvYsPNaDNKIXwYP-39sI"
+)
