@@ -18,7 +18,9 @@ class BaseModel(models.Model):
 
 
 class User(AbstractUser):
-    avatar = CloudinaryField('image')
+    avatar = CloudinaryField('image', default='https://res.cloudinary.com/dnrpggpn0/image/upload/v1681630820/agk5titgearqrmlzgjgx.png')
+    id_card = models.CharField(max_length=15)
+    gender = models.IntegerField()
 
 
 class Location(BaseModel):
@@ -81,7 +83,7 @@ class Rating(BaseModel):
 class Post(BaseModel):
     title = models.CharField(max_length=255)
     content = RichTextField()
-    number_like = models.IntegerField()
+    number_like = models.IntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
