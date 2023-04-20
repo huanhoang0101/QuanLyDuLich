@@ -7,11 +7,11 @@ from rest_framework.views import Response
 from .paginators import Paginator
 from .perms import CommentOwner
 from .models import (
-    Tour, TourImage, Post, User, TourComment, PostComment, Rating, PostLike
+    Tour, TourImage, Post, User, TourComment, PostComment, Rating, PostLike, UserTour
 )
 from .serializers import (
     TourSerializer, TourImageSerializer, UserSerializer, TourDetailSerializer,
-    PostSerializer, TourCommentSerializer, PostCommentSerializer
+    PostSerializer, TourCommentSerializer, PostCommentSerializer, UserTourSerializer
 )
 
 
@@ -32,6 +32,24 @@ class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
 class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
+
+    @action(methods=['post'], detail=True, url_path='order')
+    def order(self, request, pk):
+        t = self.get_object()
+        user = request.user
+        number_adult = request.data['number_adult']
+        number_children = request.data['number_children']
+        date_start = request.data['date_start']
+        date_finish = request.data['date_finish']
+        total_price = request.data['total_price']
+        status_tour = request.data['status']
+        user_tour = UserTour(tour=t, user=user, number_adult=number_adult,
+                             number_children=number_children, date_start=date_start,
+                             date_finish=date_finish, total_price=total_price,
+                             status=status_tour)
+        user_tour.save()
+
+        return Response(UserTourSerializer(user_tour).data, status=status.HTTP_201_CREATED)
 
     @action(methods=['get'], detail=True, url_path='image')
     def image(self, request, pk):
@@ -123,7 +141,7 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     def current_user(self, request):
         u = request.user
         if request.method.__eq__('PUT'):
-            for k, v in request.data.item():
+            for k, v in request.data.items():
                 if k.__eq__('password'):
                     u.set_password(k)
                 else:
@@ -131,6 +149,13 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
             u.save()
 
         return Response(UserSerializer(u, context={'request': request}).data)
+
+    @action(methods=['get'], detail=True, url_path='tours')
+    def view_history(self, request, pk):
+        user = self.get_object()
+        history = UserTour.objects.filter(user=user)
+
+        return Response(UserTourSerializer(history, many=True).data, status=status.HTTP_200_OK)
 
 
 #API Comments

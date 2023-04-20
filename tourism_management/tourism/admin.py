@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tour, Location, TourImage, Post, User
+from .models import Tour, Location, TourImage, Post, User, UserTour
 from django.utils.html import mark_safe
 from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
@@ -65,3 +65,4 @@ admin.site.register(Location)
 admin.site.register(TourImage, TourImageAdmin)
 admin.site.register(Post)
 admin.site.register(User, UserAdmin)
+admin.site.register(UserTour)
