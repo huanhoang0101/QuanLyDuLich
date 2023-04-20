@@ -69,3 +69,8 @@ class PostCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostComment
         fields = ['id', 'content', 'created_date', 'user']
+
+class UserTourSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserTour
+        fields = ['number_adult', 'number_children', 'date_start', 'date_finish', 'total_price', 'status']
