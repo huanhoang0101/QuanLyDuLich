@@ -18,7 +18,8 @@ class BaseModel(models.Model):
 
 
 class User(AbstractUser):
-    avatar = CloudinaryField('image', default='https://res.cloudinary.com/dnrpggpn0/image/upload/v1681630820/agk5titgearqrmlzgjgx.png')
+    avatar = CloudinaryField('image', default=
+    'https://res.cloudinary.com/dnrpggpn0/image/upload/v1681630820/agk5titgearqrmlzgjgx.png')
     id_card = models.CharField(max_length=15)
     gender = models.IntegerField()
 
@@ -41,7 +42,7 @@ class Tour(BaseModel):
     background = CloudinaryField('image')
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
-#    user = models.ManyToManyField(User, through='UserTour')
+    #    user = models.ManyToManyField(User, through='UserTour')
     def __str__(self):
         return self.name
 
@@ -101,7 +102,7 @@ class PostComment(BaseModel):
 
 class PostLike(BaseModel):
     liked = models.BooleanField(default=True)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='like')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:

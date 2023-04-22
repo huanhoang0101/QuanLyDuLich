@@ -4,22 +4,23 @@ from rest_framework import viewsets, permissions, generics, parsers, status
 from rest_framework.decorators import action
 from rest_framework.views import Response
 
-from .paginators import Paginator
+from .paginators import TourPaginator, PostPaginator, CommentPaginator
 from .perms import CommentOwner
 from .models import (
     Tour, TourImage, Post, User, TourComment, PostComment, Rating, PostLike, UserTour
 )
 from .serializers import (
     TourSerializer, TourImageSerializer, UserSerializer, TourDetailSerializer,
-    PostSerializer, TourCommentSerializer, PostCommentSerializer, UserTourSerializer
+    PostSerializer, TourCommentSerializer, PostCommentSerializer, UserTourSerializer,
+    LikedSerializer, RatingSerializer, TotalLikeSerializer, TourRatingSerializer
 )
-
+from django.db.models import Avg
 
 # API Tour
 class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourSerializer
-    pagination_class = Paginator
+    pagination_class = TourPaginator
 
     def filter_queryset(self, queryset):
         kw = self.request.query_params.get('kw')
@@ -51,6 +52,12 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
 
         return Response(UserTourSerializer(user_tour).data, status=status.HTTP_201_CREATED)
 
+    def get_permissions(self):
+        if self.action in ['rating', 'comments', 'get-rating']:
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
     @action(methods=['get'], detail=True, url_path='image')
     def image(self, request, pk):
         t = self.get_object()
@@ -58,13 +65,18 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
 
         return Response(TourImageSerializer(image, many=True).data)
 
-    @action(methods=['post'], detail=True, url_path='comments')
+    @action(methods=['post', 'get'], detail=True, url_path='comments')
     def comments(self, request, pk):
         tour = self.get_object()
-        c = TourComment(content=request.data['content'], tour=tour, user=request.user)
-        c.save()
+        if request.method.__eq__('POST'):
+            c = TourComment(content=request.data['content'], tour=tour, user=request.user)
+            c.save()
 
-        return Response(TourCommentSerializer(c).data, status=status.HTTP_201_CREATED)
+            return Response(TourCommentSerializer(c).data, status=status.HTTP_201_CREATED)
+        else:
+            c = TourComment.objects.filter(tour=tour)
+
+            return Response(TourCommentSerializer(c, many=True).data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='rating')
     def rating(self, request, pk):
@@ -74,6 +86,24 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         r.save()
 
         return Response(status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=True, url_path='get-rating')
+    def get_rating(self, request, pk):
+        user = request.user
+        tour = self.get_object()
+        rating = Rating.objects.filter(tour=tour, user=user)
+
+        return Response(RatingSerializer(rating, many=True).data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=True, url_path='average-rating')
+    def average_rating(self, request, pk):
+        tour = self.get_object()
+        avg = Rating.objects.filter(tour=tour).aggregate(average=Avg('value'))
+        result = float(avg["average"])
+        setattr(tour, 'number_rate', result)
+        tour.save()
+
+        return Response(TourRatingSerializer(tour).data)
 
 
 class TourImageViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -85,7 +115,7 @@ class TourImageViewSet(viewsets.ViewSet, generics.ListAPIView):
 class PostViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Post.objects.filter(active=True)
     serializer_class = PostSerializer
-    pagination_class = Paginator
+    pagination_class = PostPaginator
 
     def filter_queryset(self, queryset):
         kw = self.request.query_params.get('kw')
@@ -100,19 +130,30 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
     queryset = Post.objects.filter(active=True)
     serializer_class = PostSerializer
 
+    def get_permissions(self):
+        if self.action in ['like', 'comments', 'liked']:
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
     def create(self, request, *args, **kwargs):
         p = Post(title=request.data['title'], content=request.data['content'], user=request.user)
         p.save()
 
         return Response(PostSerializer(p).data, status=status.HTTP_201_CREATED)
 
-    @action(methods=['post'], detail=True, url_path='comments')
+    @action(methods=['post', 'get'], detail=True, url_path='comments')
     def comments(self, request, pk):
         post = self.get_object()
-        c = PostComment(content=request.data['content'], post=post, user=request.user)
-        c.save()
+        if request.method.__eq__('POST'):
+            c = PostComment(content=request.data['content'], post=post.id, user=request.user.id)
+            c.save()
 
-        return Response(PostCommentSerializer(c).data, status=status.HTTP_201_CREATED)
+            return Response(PostCommentSerializer(c).data, status=status.HTTP_201_CREATED)
+        else:
+            c = PostComment.objects.filter(post=post)
+
+            return Response(PostCommentSerializer(c, many=True).data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='like')
     def like(self, request, pk):
@@ -123,6 +164,23 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
         l.save()
 
         return Response(status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=True, url_path='liked')
+    def liked(self, request, pk):
+        user = request.user
+        post = self.get_object()
+        liked = PostLike.objects.filter(post=post, user=user)
+
+        return Response(LikedSerializer(liked, many=True).data)
+
+    @action(methods=['get'], detail=True, url_path='total-like')
+    def total_like(self, request, pk):
+        post = self.get_object()
+        total_like = PostLike.objects.filter(post=post).count()
+        setattr(post, 'number_like', total_like)
+        post.save()
+
+        return Response(TotalLikeSerializer(post).data)
 
 
 # API User
@@ -162,6 +220,7 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
 class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = TourComment.objects.filter(active=True)
     serializer_class = TourCommentSerializer
+    pagination_class = CommentPaginator
 
     def get_permissions(self):
         if self.action in ['destroy', 'update', 'partial_update']:
@@ -172,6 +231,7 @@ class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.Upd
 class PostCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = PostComment.objects.filter(active=True)
     serializer_class = PostCommentSerializer
+    pagination_class = CommentPaginator
 
     def get_permissions(self):
         if self.action in ['destroy', 'update', 'partial_update']:
