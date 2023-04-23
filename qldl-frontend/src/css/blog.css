@@ -1,0 +1,22 @@
+.like-icon{
+    font-size: 24px;
+    width: 50px;
+    text-align: center;
+    cursor: pointer;
+    color: rgb(0, 0, 0)
+}
+.btn-like-custom{
+    font-size: 15px;
+    width: 150px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 2px solid rgb(19, 117, 182);
+    border-radius: 5px;
+}
+.btn-like-custom:hover{
+    background-color: rgb(19, 117, 182);
+    border: 2px solid rgb(10, 76, 121);
+}
+.active-like{
+    background-color: rgb(19, 117, 182);
+}

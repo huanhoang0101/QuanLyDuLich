@@ -1,0 +1,70 @@
+.ct-footer{
+    bottom: 0;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: 170px;
+    border-top: 1px black solid;
+    display: flex;
+    background-color: rgb(244, 244, 244); 
+}
+.ct-footer > .footer-name-logo{
+    width: 200px;
+    text-align: center;
+}
+.ct-footer > .footer-name-logo > .footer-title{
+    font-weight: 600;
+    font-size: 18px;
+}
+.ct-footer > .footer-name-logo > .footer-logo{
+    width: 75px;
+    margin: auto;
+    height: 75px;
+    /* background-color: rgb(0, 0, 0); */
+}
+.ct-footer > .contact-copyright{
+    width: 370px;
+}
+.ct-footer > .contact-copyright .contact{
+    display: flex;
+    width: 100px;
+    justify-content: space-between;
+}
+.ct-footer > .contact-copyright > .copyright{
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
+.facebook-1{
+    color: palevioletred;
+    font-size: 40px;
+}
+.facebook-2{
+    color: rgb(112, 174, 216);
+    font-size: 40px;
+}
+.ct-footer > .email-phone{
+    width: 260px;
+}
+.ct-footer > .email-phone > .email{
+    margin-bottom: 20px;
+    display: flex;
+}
+.ct-footer > .email-phone > .phone{
+    display: flex;
+}
+
+.ct-footer > .certification{
+    width: 350px;
+    padding-top: 10px;
+}
+.plane{
+    margin-right: 70px;
+    font-size: 50px;
+    float: right;
+    color:rgb(104, 104, 104)
+}
+.bus{
+    margin-right: 70px;
+    font-size: 50px;
+    float: right;
+    color:rgb(104, 104, 104)
+}

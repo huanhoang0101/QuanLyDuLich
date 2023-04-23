@@ -1,0 +1,83 @@
+.main-box{
+    max-width: 1200px;
+    margin: auto;
+
+}
+.ct-header{
+    display: flex;
+    background-color: rgb(244, 244, 244); 
+    height: 100px; 
+    color: rgb(87, 87, 87);
+}
+.ct-header > .logo{
+    margin-left: 50px;
+    margin-right: 40px;
+    margin-top: 25px;
+}
+.ct-header > .ct-company-name{
+    margin-top: 30px;
+    font-size: 25px;
+    margin-right: 40px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+.ct-header > .header-link{
+    width: 560px;
+    display: flex;
+    margin-top: 36px;
+    font-size: 17px;
+}
+.ct-header > .header-link > .link-header{
+    margin-left: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.ct-header > .header-link > .link-header:hover{
+    color: black;
+}
+.logo{
+    width: 50px;
+    height: 50px;
+}
+.header-menu{
+    width: 300px;
+}
+.header-menu > .notLogin {
+    width: 100%;
+    height: 100%;
+
+}
+.header-menu > .notLogin >  .btn-login{
+    margin-left: 40%;
+    margin-top: 30px;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    border-radius: 0px;
+    border: 2px;
+    background-color: rgb(70, 70, 70);
+    color: white;
+    font-weight: 600;
+}
+.header-menu > .hadLogin {
+    justify-content: space-between;
+    display: flex;
+    margin-top: 15px;
+}
+.header-menu > .hadLogin >  .btn-logout{
+    margin-top: 16px;
+    padding-top: 0px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 0px;
+    border-radius: 0px;
+    border: 2px;
+    background-color: rgb(70, 70, 70);
+    color: white;
+    font-weight: 600;
+    height: 40px;
+}
+.hadLogin > span{
+    margin-top: 23px;
+    font-weight: 600;
+}
