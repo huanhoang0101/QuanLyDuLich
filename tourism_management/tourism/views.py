@@ -181,7 +181,7 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
     @action(methods=['get'], detail=True, url_path='total-like')
     def total_like(self, request, pk):
         post = self.get_object()
-        total_like = PostLike.objects.filter(post=post).count()
+        total_like = PostLike.objects.filter(post=post, liked=True).count()
         setattr(post, 'number_like', total_like)
         post.save()
 
