@@ -1,14 +1,51 @@
-import React, { state } from 'react';
+import React, { useState, useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Tour from '../Components/TourBlock';
 import Form from 'react-bootstrap/Form';
 import PreviousButton from '../Components/PreviousButtonn';
 import NextButton from '../Components/NextButton';
-import PageButton from '../Components/PageButton';
+import API, { endpoints } from "../configs/API"
+import { useSearchParams, useNavigate } from "react-router-dom"
+import Loading from "../Components/Loading"
 
 const ListTour = () => {
-    const arrPages = [1, 2, 3, 4, 5, 6];
+    const navigate = useNavigate();
+    const [tours, setTours] = useState(null)
+    const [page, setPage] = useState(1)
+    const [params] = useSearchParams()
+    const [checkNextPage, setCheckNextPage] = useState(2);
+    const [checkPrevPage, setCheckPrevPage] = useState(null);
+    useEffect(() => {
+        const loadTours= async () => {
+            try {
+                window.scrollTo(0, 0);
+                let e = `${endpoints['tours']}?page=${page}`
+                navigate(`/tours/?page=${page}`)
+                let res = await API.get(e)
+                setTours(res.data.results)
+                setCheckNextPage(res.data.next);
+                setCheckPrevPage(res.data.previous);
+                console.log(tours);
+            } catch (ex) {
+                setPage(1)
+            }
+        }
+        setTours(null)
+        setTimeout(function() {
+            loadTours()
+            return;
+        }, 500);
+    }, [page])
+
+    const nextPage = () => setPage(current => current + 1)
+    const prevPage = () => setPage(current => current - 1)
+
+    if (tours === null)
+        return <Loading />
+
+    if (tours.length === 0)
+        return <div className="alert alert-info m-1">KHÔNG có khóa học nào!!!</div>
     return (
         <>
             <Form style={{marginTop: "20px", marginBottom: "-15px"}}>
@@ -47,53 +84,29 @@ const ListTour = () => {
                 </Row>
             </Form>
             <Row>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
-                <Col xs={3}>
-                    <Tour/>
-                </Col>
+                {tours.map(function(element) {
+                    return (
+                        <Col xs={3}>
+                            <Tour tour={element}/>
+                        </Col>
+                    );
+                })}
+                
             </Row>
             <div style={{margin: "20px", display:"flex", justifyContent:"space-between"}}>
-                <PreviousButton/>
-                <div style={{width:"500px", justifyContent:"space-around", display:"flex"}}>
-                    {arrPages.map(function(element) {
-                        return (
-                            <PageButton page={element}/>
-                        );
-                    })}
-                </div>
-                <NextButton/>
+            
+                {checkPrevPage ? (
+                        <PreviousButton prevPage={prevPage}/>
+                    ) : (
+                    <div>
+                    </div>
+                )}
+                {checkNextPage ? (
+                    <NextButton nextPage={nextPage}/>
+                ) : (
+                    <div>
+                    </div>
+                )}
             </div>
         </>
     );

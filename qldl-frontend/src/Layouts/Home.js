@@ -20,10 +20,10 @@ function Home() {
         <Slide />
       </div>
       <div>
-        <NewTours></NewTours>
+        {/* <NewTours></NewTours> */}
       </div>
       <div>
-        <NewBlogs/>
+        {/* <NewBlogs/> */}
       </div>
     </>
   );

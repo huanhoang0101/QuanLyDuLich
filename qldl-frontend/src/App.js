@@ -39,9 +39,9 @@ function App() {
                   <Route path="/register" element={<RegisterPage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/tours" element={<ListTour />} />
-                  <Route path="/blogs" element={<ListBlogs />} />
+                  <Route path="/posts" element={<ListBlogs />} />
                   <Route path="/tour/:tourId" element={<DetailTour/>} />
-                  <Route path="/blog/:blogId" element={<DetailBlog/>} />
+                  <Route path="/post/:blogId" element={<DetailBlog/>} />
                   <Route path="/profile" element={<EditProfile/>} />
                   <Route path="/password" element={<EditPassword/>} />
                   <Route path="/history" element={<OrderHistory/>} />

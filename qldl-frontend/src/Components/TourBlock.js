@@ -7,24 +7,27 @@ import {
 } from 'react-router-dom';
 import '../css/tour.css'
 
-const Tour = () => {
-
-
+const Tour = (props) => {
+  const tourId = "/tour/"+props.tour.id;
+  function formatCurrency(amount) {
+    return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  }
+  console.log(props.tour);
   return (
     <>
         <Card style={{ width: '17.5rem' }} className="tour-card">
           <Card.Img variant="top" src={img} />
           <Card.Body>
             <Card.Title>
-              <Link style={{color:"black", textDecoration:"none"}} to="/tour/1">
-                Du lịch Hè - Tour Phú Quốc - Grand World - Vinwonders từ Sài Gòn 2023
+              <Link style={{color:"black", textDecoration:"none"}} to={tourId}>
+                {props.tour.name}
               </Link>
             </Card.Title>
             <ListGroup variant="flush">
-              <ListGroup.Item>Giá người lớn : 2.400.000 vnđ</ListGroup.Item>
-              <ListGroup.Item>Giá trẻ em : 1.500.000 vnđ</ListGroup.Item>
-              <ListGroup.Item>3 ngày 2 đêm</ListGroup.Item>
-              <ListGroup.Item>Số người : 15</ListGroup.Item>
+              <ListGroup.Item>Giá người lớn : {formatCurrency(props.tour.adult_price)}</ListGroup.Item>
+              <ListGroup.Item>Giá trẻ em : {formatCurrency(props.tour.children_price)}</ListGroup.Item>
+              <ListGroup.Item>So Ngay : {props.tour.duration}</ListGroup.Item>
+              <ListGroup.Item>Số người : {props.tour.max_person}</ListGroup.Item>
             </ListGroup>
           </Card.Body>
         </Card>

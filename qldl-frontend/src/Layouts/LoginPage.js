@@ -9,14 +9,28 @@ import {
 } from 'react-router-dom';
 import { MyUserContext } from "../configs/MyContext"
 import Loading from "../Components/Loading"
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-
   const [loading, setLoading] = useState(false)
   const [user, dispatch] = useContext(MyUserContext)
   const [validated, setValidated] = useState(false);
+  const MySwal = withReactContent(Swal)
+  const Toast = MySwal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 500,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', MySwal.stopTimer)
+      toast.addEventListener('mouseleave', MySwal.resumeTimer)
+    }
+  })
+
   const handleSubmit = (event) => {
     const form = event.currentTarget;
     event.preventDefault();
@@ -31,8 +45,8 @@ function Login() {
           let res = await API.post(endpoints['login'], {
               "username": username,
               "password": password,
-              "client_id": "QmvZpd2Inv3wtZxheYgm0dEWZQfw3dvmmVKUA9hI",
-              "client_secret": "Ayi9kIkmazUNSPqAEYkficp7FymA3iCiwbpqMVm5CgtxidhD8TRqCIfRQgJQ0E7KPuQRcgwsUnHdvy5c1NYLrTrFGgClQ1QMnlejDdsDxEAnSNrotoQ7yHlZagHLZdkn",
+              "client_id": "nyjfbR3VQ2eUamolYqDG0v0J2ET0zmltCBDvJTd5",
+              "client_secret": "Qf5MhTbIAE2EaIWp8MX3vMOnW8qWlJokl854PRRQBHcY8Gwo2Gar04zknhWescNN6To9niXRiSDX9gcqmxhQNtjFBn83f59Q0f44ylEuyBqFu0SYlkoIxE1v0hvldJhO",
               "grant_type": "password"
           })
 
@@ -53,6 +67,10 @@ function Login() {
     }
     setLoading(true);
     process();
+    Toast.fire({
+      icon: 'success',
+      title: 'Signed in successfully'
+    })
   };
   if (user !== null)
     return <Navigate to="/" />
@@ -64,7 +82,7 @@ function Login() {
           <Form.Group style={{height:"95px"}}  controlId="validationCustomUsername">
             <Form.Label>Email</Form.Label>
               <Form.Control
-                type="email"
+                type="text"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 placeholder="Username"

@@ -21,8 +21,7 @@ const NewBlogs = () => {
       </Row>
       <div style={{width:"100%"}}>
         <div style={{width: "200px", margin: "auto"}}>
-        
-          <button className='btn-all-blogs'><Link style={{color:"white", textDecoration:"none"}} to="/blogs">See All Blogs</Link></button>
+          <button className='btn-all-blogs'><Link style={{color:"white", textDecoration:"none"}} to="/posts">See All Blogs</Link></button>
         </div>
       </div>
     </>

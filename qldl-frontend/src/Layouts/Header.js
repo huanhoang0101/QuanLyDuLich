@@ -1,22 +1,37 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect} from 'react';
 import '../css/header.css'
 import logo from '../image/logo/logo.png'
 import {
     Link,
-    Navigate
+    Navigate,
+    useNavigate
 } from 'react-router-dom';
 import { MyUserContext } from "../configs/MyContext";
 import cookie from 'react-cookies';
+import Cookies from 'js-cookie';
 
 
 
 const Header = () => {
+    const navigate = useNavigate();
     const [user, dispatch] = useContext(MyUserContext)
+    const [nameValue, setNameValue] = useState('');
 
+    useEffect(() => {
+        const cookie = Cookies.get('current-user')
+        if (cookie) {
+            const parsedValue = JSON.parse(cookie);
+            setNameValue(parsedValue['first_name']  + " " + parsedValue['last_name']);
+            
+        }
+    }, [user]);
+      
+    
     const logout = () => {
         dispatch({
             "type": "logout"
         })
+        navigate("/login");
     }
 
 
@@ -33,7 +48,7 @@ const Header = () => {
                     <Link style={{color:"rgb(87, 87, 87)", textDecoration:"none"}} to="/tours">Tours</Link>
                 </p>
                 <p className='link-header'>
-                    <Link style={{color:"rgb(87, 87, 87)", textDecoration:"none"}} to="/blogs">Blogs</Link>
+                    <Link style={{color:"rgb(87, 87, 87)", textDecoration:"none"}} to="/posts">Blogs</Link>
                 </p>
             </div>
             <div className="header-menu">
@@ -43,7 +58,7 @@ const Header = () => {
                                            
                             <span>
                             <Link style={{color:"rgb(87, 87, 87)", textDecoration:"none"}} to="/profile">     
-                                User Name
+                                {nameValue}
                                 </Link>
                             </span>
 

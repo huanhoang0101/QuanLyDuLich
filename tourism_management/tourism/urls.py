@@ -4,10 +4,13 @@ from . import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register('tour', views.TourViewSet)
+router.register('tours', views.TourViewSet)
 router.register('tour', views.TourDetailViewSet)
-router.register('post', views.PostViewSet)
+router.register('posts', views.PostViewSet)
+router.register('post', views.PostDetailViewSet)
 router.register('user', views.UserViewSet)
+router.register('tour-comments', views.TourCommentViewSet)
+router.register('post-comments', views.PostCommentViewSet)
 
 
 urlpatterns = [

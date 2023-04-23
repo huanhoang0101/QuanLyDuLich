@@ -1,4 +1,4 @@
-from .models import Tour, User, TourImage, Location, UserTour, Post, TourComment, Rating
+from .models import Tour, User, TourImage, Location, UserTour, Post, TourComment, Rating, PostComment
 from rest_framework import serializers
 
 
@@ -30,10 +30,15 @@ class TourImageSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'number_like', 'created_date']
+        fields = ['id', 'title', 'content', 'number_like', 'created_date', 'user_id']
 
 
 class UserSerializer(serializers.ModelSerializer):
+    def get_image(self, obj):
+        if obj.avatar:
+            requests = self.context.get('request')
+            return requests.build_absolute_uri(obj.avatar) if requests else ''
+
     def create(self, validated_data):
         data = validated_data.copy()
 
@@ -45,7 +50,22 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'username', 'password', 'avatar']
+        fields = ['id', 'first_name', 'last_name', 'username', 'password', 'email', 'id_card', 'gender']
         extra_kwargs = {
             'password': {'write_only': True}
         }
+
+class TourCommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = TourComment
+        fields = ['id', 'content', 'created_date', 'user']
+
+
+class PostCommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = PostComment
+        fields = ['id', 'content', 'created_date', 'user']

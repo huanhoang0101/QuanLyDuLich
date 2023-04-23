@@ -2,12 +2,12 @@ import React, { state } from 'react';
 import '../css/paginate.css';
 import Button from 'react-bootstrap/Button';
 
-const NextButton = () => {
+const NextButton = (props) => {
 
 
   return (
     <>
-        <Button variant="outline-dark" className='btn-paginate' style={{float:"right"}}>Next Page</Button>
+        <Button onClick={props.nextPage} variant="outline-dark" className='btn-paginate' style={{float:"right"}}>Next Page</Button>
     </>
   );
 

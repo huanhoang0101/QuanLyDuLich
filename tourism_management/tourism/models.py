@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from ckeditor.fields import RichTextField
+from cloudinary.models import CloudinaryField
 
 
 class BaseModel(models.Model):
@@ -17,7 +18,9 @@ class BaseModel(models.Model):
 
 
 class User(AbstractUser):
-    avatar = models.ImageField(upload_to='users/%Y/%m', null=True)
+    avatar = CloudinaryField('image', default='https://res.cloudinary.com/dnrpggpn0/image/upload/v1681630820/agk5titgearqrmlzgjgx.png')
+    id_card = models.CharField(max_length=15)
+    gender = models.IntegerField()
 
 
 class Location(BaseModel):
@@ -35,6 +38,7 @@ class Tour(BaseModel):
     description = RichTextField()
     number_rate = models.FloatField(null=True)
     max_person = models.IntegerField()
+    background = CloudinaryField('image')
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
 #    user = models.ManyToManyField(User, through='UserTour')
@@ -54,7 +58,7 @@ class UserTour(BaseModel):
 
 
 class TourImage(BaseModel):
-    value = models.ImageField(upload_to='tour_image/%Y/%m', null=True)
+    value = CloudinaryField('image')
     tour = models.ForeignKey(Tour, on_delete=models.CASCADE, related_name='image')
 
 
@@ -79,7 +83,7 @@ class Rating(BaseModel):
 class Post(BaseModel):
     title = models.CharField(max_length=255)
     content = RichTextField()
-    number_like = models.IntegerField()
+    number_like = models.IntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -95,7 +99,7 @@ class PostComment(BaseModel):
         return self.content
 
 
-class LikeComment(BaseModel):
+class PostLike(BaseModel):
     liked = models.BooleanField(default=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
