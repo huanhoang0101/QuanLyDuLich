@@ -15,6 +15,7 @@ from .serializers import (
     LikedSerializer, RatingSerializer, TotalLikeSerializer, TourRatingSerializer
 )
 from django.db.models import Avg
+from django.contrib.auth import update_session_auth_hash
 
 # API Tour
 class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -131,7 +132,7 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
     serializer_class = PostSerializer
 
     def get_permissions(self):
-        if self.action in ['like', 'comments', 'liked']:
+        if self.action in ['like', 'comments', 'liked', 'change-password']:
             return [permissions.IsAuthenticated()]
 
         return [permissions.AllowAny()]
@@ -190,7 +191,7 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     parser_classes = [parsers.MultiPartParser, ]
 
     def get_permissions(self):
-        if self.action in ['current-user']:
+        if self.action in ['current-user', 'tours']:
             return [permissions.IsAuthenticated()]
 
         return [permissions.AllowAny()]
@@ -200,13 +201,26 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
         u = request.user
         if request.method.__eq__('PUT'):
             for k, v in request.data.items():
-                if k.__eq__('password'):
-                    u.set_password(k)
-                else:
-                    setattr(u, k, v)
+                setattr(u, k, v)
             u.save()
 
         return Response(UserSerializer(u, context={'request': request}).data)
+
+    @action(methods=['put'], detail=False, url_path='change-password')
+    def change_password(self, request):
+        user = request.user
+        old = request.data['old-password']
+        new = request.data['new-password']
+        confirm = request.data['confirm-password']
+        if user.check_password(old):
+            if new == confirm:
+                update_session_auth_hash(request, request.user)
+                user.set_password(new)
+                user.save()
+
+                return Response(UserSerializer(user, context={'request': request}).data, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['get'], detail=True, url_path='tours')
     def view_history(self, request, pk):

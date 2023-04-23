@@ -56,9 +56,9 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # image = serializers.SerializerMethodField(source='avatar')
+    image = serializers.SerializerMethodField(source='avatar')
 
-    def get_avatar(self, obj):
+    def get_image(self, obj):
         if obj.avatar:
             request = self.context.get('request')
             return request.build_absolute_uri(
@@ -75,7 +75,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'username', 'password', 'email', 'id_card', 'gender']
+        fields = ['id', 'first_name', 'last_name', 'username',
+                  'password', 'email', 'id_card', 'gender', 'image']
         extra_kwargs = {
             'password': {'write_only': True}
         }
