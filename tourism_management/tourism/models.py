@@ -56,6 +56,7 @@ class UserTour(BaseModel):
     status = models.IntegerField()
     tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment_method = models.CharField(max_length=10)
 
 
 class TourImage(BaseModel):
