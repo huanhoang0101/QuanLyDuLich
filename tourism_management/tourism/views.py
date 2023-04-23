@@ -93,6 +93,8 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         user = request.user
         tour = self.get_object()
         rating = Rating.objects.filter(tour=tour, user=user)
+        if rating is None:
+            rating = 0
 
         return Response(RatingSerializer(rating, many=True).data, status=status.HTTP_200_OK)
 
@@ -171,6 +173,8 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
         user = request.user
         post = self.get_object()
         liked = PostLike.objects.filter(post=post, user=user)
+        if liked is None:
+            liked = False
 
         return Response(LikedSerializer(liked, many=True).data)
 
