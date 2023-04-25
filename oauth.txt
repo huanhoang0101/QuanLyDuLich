@@ -1,5 +1,0 @@
-client_id: CFtpJvWfuMgVSke5un18W3t7Gs1jGtC8gzbpeWSN
-
-client_secret: V98690kbr7gh86XHqAPj03obMNksjNtJDoMyX7pV8LSALfUzu8dtmmlysg3A9OSNb89YWruec3Y6fAyWUWlglZn45xyczOvtu7emjI4GCKFTfbwciy5OIqBGphLRCnVH
-
-token: q8QCPhn2ONsqNWY15bVunC9Bu90Hid

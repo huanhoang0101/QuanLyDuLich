@@ -11,6 +11,7 @@ router.register('post', views.PostDetailViewSet)
 router.register('user', views.UserViewSet)
 router.register('tour-comments', views.TourCommentViewSet)
 router.register('post-comments', views.PostCommentViewSet)
+router.register('tour-order', views.TourOrderViewSet)
 
 
 urlpatterns = [

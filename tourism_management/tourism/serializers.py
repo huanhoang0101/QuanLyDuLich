@@ -83,21 +83,27 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TourCommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = TourComment
-        fields = ['id', 'content', 'created_date', 'user_id']
+        fields = ['id', 'content', 'created_date', 'user']
 
 
 class PostCommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = PostComment
-        fields = ['id', 'content', 'created_date', 'user_id']
+        fields = ['id', 'content', 'created_date', 'user']
 
 
 class UserTourSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = UserTour
-        fields = ['number_adult', 'number_children', 'date_start', 'date_finish', 'total_price', 'status']
+        fields = ['number_adult', 'number_children', 'date_start', 'date_finish', 'total_price', 'status', 'user']
 
 
 class LikedSerializer(serializers.ModelSerializer):

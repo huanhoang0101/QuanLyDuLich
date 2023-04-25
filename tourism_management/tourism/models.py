@@ -13,15 +13,18 @@ class BaseModel(models.Model):
         abstract = True
 
 
-# class Role(BaseModel):
-#    name = models.CharField(max_length=50)
+GENDER_CHOICES = (
+    (0, 'female'),
+    (1, 'male'),
+    (2, 'not specified'),
+)
 
 
 class User(AbstractUser):
     avatar = CloudinaryField('image', default=
     'https://res.cloudinary.com/dnrpggpn0/image/upload/v1681630820/agk5titgearqrmlzgjgx.png')
     id_card = models.CharField(max_length=15)
-    gender = models.IntegerField()
+    gender = models.IntegerField(choices=GENDER_CHOICES)
 
 
 class Location(BaseModel):
@@ -37,7 +40,7 @@ class Tour(BaseModel):
     children_price = models.DecimalField(max_digits=10, decimal_places=2)
     adult_price = models.DecimalField(max_digits=10, decimal_places=2)
     description = RichTextField()
-    number_rate = models.FloatField(null=True)
+    number_rate = models.FloatField(default=0)
     max_person = models.IntegerField()
     background = CloudinaryField('image')
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -53,9 +56,10 @@ class UserTour(BaseModel):
     date_start = models.DateTimeField()
     date_finish = models.DateTimeField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.IntegerField()
+    status = models.IntegerField(default=0)
     tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment_method = models.CharField(max_length=10)
 
 
 class TourImage(BaseModel):

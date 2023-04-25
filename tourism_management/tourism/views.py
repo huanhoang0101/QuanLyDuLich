@@ -4,7 +4,7 @@ from rest_framework import viewsets, permissions, generics, parsers, status
 from rest_framework.decorators import action
 from rest_framework.views import Response
 
-from .paginators import TourPaginator, PostPaginator, CommentPaginator
+from .paginators import TourPaginator, PostPaginator, CommentPaginator, TourOrderPaginator
 from .perms import CommentOwner
 from .models import (
     Tour, TourImage, Post, User, TourComment, PostComment, Rating, PostLike, UserTour
@@ -44,7 +44,7 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         date_start = request.data['date_start']
         date_finish = request.data['date_finish']
         total_price = request.data['total_price']
-        status_tour = request.data['status']
+        status_tour = 1
         user_tour = UserTour(tour=t, user=user, number_adult=number_adult,
                              number_children=number_children, date_start=date_start,
                              date_finish=date_finish, total_price=total_price,
@@ -93,6 +93,8 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         user = request.user
         tour = self.get_object()
         rating = Rating.objects.filter(tour=tour, user=user)
+        if rating is None:
+            rating = 0
 
         return Response(RatingSerializer(rating, many=True).data, status=status.HTTP_200_OK)
 
@@ -171,13 +173,15 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
         user = request.user
         post = self.get_object()
         liked = PostLike.objects.filter(post=post, user=user)
+        if liked is None:
+            liked = False
 
         return Response(LikedSerializer(liked, many=True).data)
 
     @action(methods=['get'], detail=True, url_path='total-like')
     def total_like(self, request, pk):
         post = self.get_object()
-        total_like = PostLike.objects.filter(post=post).count()
+        total_like = PostLike.objects.filter(post=post, liked=True).count()
         setattr(post, 'number_like', total_like)
         post.save()
 
@@ -252,3 +256,20 @@ class PostCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.Upd
             return [CommentOwner()]
 
         return [permissions.AllowAny()]
+
+
+class TourOrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
+    queryset = UserTour.objects.filter(active=True)
+    serializer_class = UserTourSerializer
+    pagination_class = TourOrderPaginator
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(methods=['put'], detail=True, url_path='status')
+    def chang_status(self, request, pk):
+        tour_order = self.get_object()
+        value = request.data['status']
+        setattr(tour_order, 'status', value)
+        tour_order.save()
+
+        return Response(status=status.HTTP_200_OK)
+

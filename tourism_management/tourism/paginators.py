@@ -11,3 +11,7 @@ class PostPaginator(pagination.PageNumberPagination):
 
 class CommentPaginator(pagination.PageNumberPagination):
     page_size = 5
+
+
+class TourOrderPaginator(pagination.PageNumberPagination):
+    page_size = 10

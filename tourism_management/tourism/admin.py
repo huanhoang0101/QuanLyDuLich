@@ -11,6 +11,7 @@ class TourForm(forms.ModelForm):
     class Meta:
         model = Tour
         fields = '__all__'
+        exclude = ['number_rate']
 
 
 class TourImageForm(forms.ModelForm):
@@ -33,7 +34,8 @@ class TourImageInlineAdmin(admin.StackedInline):
     readonly_fields = ['image']
 
     def image(self, tour_image):
-        return mark_safe("<img src='/static/{}' width='120' />".format(tour_image.value))
+        return mark_safe("<img src='https://res.cloudinary.com/dnrpggpn0/{}' width='120' />"
+                         .format(tour_image.value))
 
 
 class TourAdmin(admin.ModelAdmin):
@@ -58,11 +60,35 @@ class UserAdmin(admin.ModelAdmin):
     form = UserForm
     list_display = ['id', 'username']
 
+class PostForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorUploadingWidget)
+
+    class Meta:
+        model = Post
+        fields = '__all__'
+        exclude = ['number_like']
+
+class PostAdmin(admin.ModelAdmin):
+    form = PostForm
+    list_display = ['id', 'title', 'number_like']
+    list_filter = ['number_like']
+
+class UserTourForm(forms.ModelForm):
+    class Meta:
+        model = UserTour
+        fields = '__all__'
+        exclude = ['status']
+
+class UserTourAdmin(admin.ModelAdmin):
+    form = UserTourForm
+    list_display = ['tour', 'status']
+    list_filter = ['tour', 'status']
+
 
 # Register your models here.
 admin.site.register(Tour, TourAdmin)
 admin.site.register(Location)
 admin.site.register(TourImage, TourImageAdmin)
-admin.site.register(Post)
+admin.site.register(Post, PostAdmin)
 admin.site.register(User, UserAdmin)
-admin.site.register(UserTour)
+admin.site.register(UserTour, UserTourAdmin)
