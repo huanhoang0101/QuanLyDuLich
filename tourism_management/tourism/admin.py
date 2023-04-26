@@ -4,7 +4,6 @@ from django.utils.html import mark_safe
 from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
-
 class TourForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorUploadingWidget)
 
@@ -15,7 +14,6 @@ class TourForm(forms.ModelForm):
 
 
 class TourImageForm(forms.ModelForm):
-#    value = forms.ImageField(widget=CKEditorUploadingWidget)
 
     class Meta:
         model = TourImage
@@ -26,6 +24,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = '__all__'
+        exclude = ['avatar']
 
 
 class TourImageInlineAdmin(admin.StackedInline):
@@ -53,7 +52,7 @@ class TourImageAdmin(admin.ModelAdmin):
     readonly_fields = ['image']
 
     def image(self, tour_image):
-        return mark_safe("<img src='/static/{}' width='120' />".format(tour_image.value))
+        return mark_safe("<img src='https://res.cloudinary.com/dnrpggpn0/{}' width='120' />".format(tour_image.value))
 
 
 class UserAdmin(admin.ModelAdmin):
