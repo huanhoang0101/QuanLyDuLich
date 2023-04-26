@@ -233,7 +233,8 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
 
 
 #API Comments
-class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
+class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
+                         generics.UpdateAPIView, generics.ListAPIView):
     queryset = TourComment.objects.filter(active=True)
     serializer_class = TourCommentSerializer
     pagination_class = CommentPaginator
@@ -244,7 +245,22 @@ class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.Upd
 
         return [permissions.AllowAny()]
 
-class PostCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
+    def filter_queryset(self, queryset):
+        tour_id = self.request.query_params.get('id')
+        if self.action.__eq__('list') and tour_id:
+            queryset = queryset.filter(tour=tour_id).order_by('-created_date')
+
+        return queryset
+
+    """
+    def list(self, request, *args, **kwargs):
+        tour_id = request.data['tour_id']
+        queryset = TourComment.objects.filter(tour=tour_id).order_by('-created_date')
+        return queryset
+        """
+
+class PostCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
+                         generics.UpdateAPIView, generics.ListAPIView):
     queryset = PostComment.objects.filter(active=True)
     serializer_class = PostCommentSerializer
     pagination_class = CommentPaginator
@@ -255,6 +271,12 @@ class PostCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.Upd
 
         return [permissions.AllowAny()]
 
+    def filter_queryset(self, queryset):
+        post_id = self.request.query_params.get('id')
+        if self.action.__eq__('list') and post_id:
+            queryset = queryset.filter(post=post_id).order_by('-created_date')
+
+        return queryset
 
 class TourOrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = UserTour.objects.filter(active=True).order_by('-created_date')
