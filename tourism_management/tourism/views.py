@@ -44,11 +44,12 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         date_start = request.data['date_start']
         date_finish = request.data['date_finish']
         total_price = request.data['total_price']
+        payment_method = request.data['payment_method']
         status_tour = 1
         user_tour = UserTour(tour=t, user=user, number_adult=number_adult,
                              number_children=number_children, date_start=date_start,
                              date_finish=date_finish, total_price=total_price,
-                             status=status_tour)
+                             status=status_tour, payment_method=payment_method)
         user_tour.save()
 
         return Response(UserTourSerializer(user_tour, context={'request': request}).data, status=status.HTTP_201_CREATED)
@@ -227,7 +228,7 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     @action(methods=['get'], detail=True, url_path='tours')
     def view_history(self, request, pk):
         user = self.get_object()
-        history = UserTour.objects.filter(user=user)
+        history = UserTour.objects.filter(user=user).order_by('-created_date')
 
         return Response(UserTourSerializer(history, many=True, context={'request': request}).data, status=status.HTTP_200_OK)
 
