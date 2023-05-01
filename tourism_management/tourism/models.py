@@ -22,7 +22,7 @@ GENDER_CHOICES = (
 
 class User(AbstractUser):
     avatar = CloudinaryField('image', default=
-    'https://res.cloudinary.com/dnrpggpn0/image/upload/v1681630820/agk5titgearqrmlzgjgx.png')
+    'image/upload/v1681630820/agk5titgearqrmlzgjgx.png')
     id_card = models.CharField(max_length=15)
     gender = models.IntegerField(choices=GENDER_CHOICES)
 

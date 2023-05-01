@@ -19,7 +19,7 @@ from django.contrib.auth import update_session_auth_hash
 
 # API Tour
 class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
-    queryset = Tour.objects.filter(active=True)
+    queryset = Tour.objects.filter(active=True).order_by('-created_date')
     serializer_class = TourSerializer
     pagination_class = TourPaginator
 
@@ -51,7 +51,7 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
                              status=status_tour)
         user_tour.save()
 
-        return Response(UserTourSerializer(user_tour).data, status=status.HTTP_201_CREATED)
+        return Response(UserTourSerializer(user_tour, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
     def get_permissions(self):
         if self.action in ['rating', 'comments', 'get-rating']:
@@ -61,10 +61,10 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
 
     @action(methods=['get'], detail=True, url_path='image')
     def image(self, request, pk):
-        t = self.get_object()
-        image = t.image.filter(active=True)
+        tour = self.get_object()
+        image = tour.image.filter(active=True)
 
-        return Response(TourImageSerializer(image, many=True).data)
+        return Response(TourImageSerializer(image, many=True, context={'request': request}).data)
 
     @action(methods=['post', 'get'], detail=True, url_path='comments')
     def comments(self, request, pk):
@@ -73,11 +73,11 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
             c = TourComment(content=request.data['content'], tour=tour, user=request.user)
             c.save()
 
-            return Response(TourCommentSerializer(c).data, status=status.HTTP_201_CREATED)
+            return Response(TourCommentSerializer(c, context={'request': request}).data, status=status.HTTP_201_CREATED)
         else:
-            c = TourComment.objects.filter(tour=tour)
+            c = TourComment.objects.filter(tour=tour).order_by('-created_date')
 
-            return Response(TourCommentSerializer(c, many=True).data, status=status.HTTP_200_OK)
+            return Response(TourCommentSerializer(c, many=True, context={'request': request}).data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='rating')
     def rating(self, request, pk):
@@ -116,7 +116,7 @@ class TourImageViewSet(viewsets.ViewSet, generics.ListAPIView):
 
 # API Post
 class PostViewSet(viewsets.ViewSet, generics.ListAPIView):
-    queryset = Post.objects.filter(active=True)
+    queryset = Post.objects.filter(active=True).order_by('-created_date')
     serializer_class = PostSerializer
     pagination_class = PostPaginator
 
@@ -127,11 +127,11 @@ class PostViewSet(viewsets.ViewSet, generics.ListAPIView):
 
         return queryset
 
-
 class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.UpdateAPIView,
                         generics.DestroyAPIView, generics.CreateAPIView):
     queryset = Post.objects.filter(active=True)
     serializer_class = PostSerializer
+    pagination_class = CommentPaginator
 
     def get_permissions(self):
         if self.action in ['like', 'comments', 'liked', 'change-password']:
@@ -149,14 +149,13 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
     def comments(self, request, pk):
         post = self.get_object()
         if request.method.__eq__('POST'):
-            c = PostComment(content=request.data['content'], post=post.id, user=request.user.id)
+            c = PostComment(content=request.data['content'], post=post.id, user=request.user)
             c.save()
 
-            return Response(PostCommentSerializer(c).data, status=status.HTTP_201_CREATED)
+            return Response(PostCommentSerializer(c, context={'request': request}).data, status=status.HTTP_201_CREATED)
         else:
-            c = PostComment.objects.filter(post=post)
-
-            return Response(PostCommentSerializer(c, many=True).data, status=status.HTTP_200_OK)
+            c = PostComment.objects.filter(post=post).order_by('-created_date')
+            return Response(PostCommentSerializer(c, many=True, context={'request': request}).data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='like')
     def like(self, request, pk):
@@ -186,7 +185,6 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
         post.save()
 
         return Response(TotalLikeSerializer(post).data)
-
 
 # API User
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
@@ -231,11 +229,12 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
         user = self.get_object()
         history = UserTour.objects.filter(user=user)
 
-        return Response(UserTourSerializer(history, many=True).data, status=status.HTTP_200_OK)
+        return Response(UserTourSerializer(history, many=True, context={'request': request}).data, status=status.HTTP_200_OK)
 
 
 #API Comments
-class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
+class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
+                         generics.UpdateAPIView, generics.ListAPIView):
     queryset = TourComment.objects.filter(active=True)
     serializer_class = TourCommentSerializer
     pagination_class = CommentPaginator
@@ -246,7 +245,22 @@ class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.Upd
 
         return [permissions.AllowAny()]
 
-class PostCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
+    def filter_queryset(self, queryset):
+        tour_id = self.request.query_params.get('id')
+        if self.action.__eq__('list') and tour_id:
+            queryset = queryset.filter(tour=tour_id).order_by('-created_date')
+
+        return queryset
+
+    """
+    def list(self, request, *args, **kwargs):
+        tour_id = request.data['tour_id']
+        queryset = TourComment.objects.filter(tour=tour_id).order_by('-created_date')
+        return queryset
+        """
+
+class PostCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
+                         generics.UpdateAPIView, generics.ListAPIView):
     queryset = PostComment.objects.filter(active=True)
     serializer_class = PostCommentSerializer
     pagination_class = CommentPaginator
@@ -257,9 +271,15 @@ class PostCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.Upd
 
         return [permissions.AllowAny()]
 
+    def filter_queryset(self, queryset):
+        post_id = self.request.query_params.get('id')
+        if self.action.__eq__('list') and post_id:
+            queryset = queryset.filter(post=post_id).order_by('-created_date')
+
+        return queryset
 
 class TourOrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
-    queryset = UserTour.objects.filter(active=True)
+    queryset = UserTour.objects.filter(active=True).order_by('-created_date')
     serializer_class = UserTourSerializer
     pagination_class = TourOrderPaginator
     permission_classes = [permissions.IsAdminUser]
