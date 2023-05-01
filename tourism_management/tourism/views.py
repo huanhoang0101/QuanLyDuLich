@@ -149,7 +149,7 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
     def comments(self, request, pk):
         post = self.get_object()
         if request.method.__eq__('POST'):
-            c = PostComment(content=request.data['content'], post=post.id, user=request.user)
+            c = PostComment(content=request.data['content'], post=post, user=request.user)
             c.save()
 
             return Response(PostCommentSerializer(c, context={'request': request}).data, status=status.HTTP_201_CREATED)
@@ -251,6 +251,9 @@ class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
             queryset = queryset.filter(tour=tour_id).order_by('-created_date')
 
         return queryset
+
+    def set_queryset(self, request):
+        id = request.data()
 
     """
     def list(self, request, *args, **kwargs):
