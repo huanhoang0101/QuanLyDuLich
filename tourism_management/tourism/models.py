@@ -18,21 +18,24 @@ GENDER_CHOICES = (
     (1, 'male'),
     (2, 'not specified'),
 )
-
+ROLE_CHOICES = (
+    (0, 'admin'),
+    (1, 'staff'),
+    (2, 'customer'),
+)
 
 class User(AbstractUser):
     avatar = CloudinaryField('image', default=
     'image/upload/v1681630820/agk5titgearqrmlzgjgx.png')
     id_card = models.CharField(max_length=15)
-    gender = models.IntegerField(choices=GENDER_CHOICES)
-
+    gender = models.PositiveSmallIntegerField(choices=GENDER_CHOICES)
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES)
 
 class Location(BaseModel):
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
-
 
 class Tour(BaseModel):
     name = models.CharField(max_length=255)
@@ -55,7 +58,7 @@ class UserTour(BaseModel):
     number_children = models.IntegerField()
     date_start = models.DateTimeField()
     date_finish = models.DateTimeField()
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=0)
     status = models.IntegerField(default=0)
     tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
