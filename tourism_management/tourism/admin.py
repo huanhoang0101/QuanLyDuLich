@@ -3,6 +3,11 @@ from .models import Tour, Location, TourImage, Post, User, UserTour
 from django.utils.html import mark_safe
 from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
+class TourismManagementAdminSite(admin.AdminSite):
+    site_header = 'TOURISM MANAGEMENT'
+
+
+admin_site = TourismManagementAdminSite('TourismManagementAdminSite')
 
 class TourForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorUploadingWidget)
@@ -24,7 +29,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = '__all__'
-        exclude = ['avatar']
+        exclude = ['avatar', 'is_staff', 'last_login', 'date_joined']
 
 
 class TourImageInlineAdmin(admin.StackedInline):
@@ -57,7 +62,9 @@ class TourImageAdmin(admin.ModelAdmin):
 
 class UserAdmin(admin.ModelAdmin):
     form = UserForm
-    list_display = ['id', 'username']
+    list_display = ['id', 'username', 'email', 'role']
+    search_fields = ['email', 'username', 'role']
+    list_filter = ['role', 'gender']
 
 class PostForm(forms.ModelForm):
     content = forms.CharField(widget=CKEditorUploadingWidget)
@@ -69,8 +76,9 @@ class PostForm(forms.ModelForm):
 
 class PostAdmin(admin.ModelAdmin):
     form = PostForm
-    list_display = ['id', 'title', 'number_like']
-    list_filter = ['number_like']
+    list_display = ['id', 'title', 'number_like', 'user']
+    list_filter = ['number_like', 'user']
+    search_fields = ['title', 'user__username']
 
 class UserTourForm(forms.ModelForm):
     class Meta:
@@ -80,14 +88,22 @@ class UserTourForm(forms.ModelForm):
 
 class UserTourAdmin(admin.ModelAdmin):
     form = UserTourForm
-    list_display = ['tour', 'status']
+    list_display = ['tour', 'user', 'total_price', 'status']
     list_filter = ['tour', 'status']
+    search_fields = ['tour', 'user__username']
 
 
 # Register your models here.
-admin.site.register(Tour, TourAdmin)
-admin.site.register(Location)
-admin.site.register(TourImage, TourImageAdmin)
-admin.site.register(Post, PostAdmin)
-admin.site.register(User, UserAdmin)
-admin.site.register(UserTour, UserTourAdmin)
+# admin.site.register(Tour, TourAdmin)
+# admin.site.register(Location)
+# admin.site.register(TourImage, TourImageAdmin)
+# admin.site.register(Post, PostAdmin)
+# admin.site.register(User, UserAdmin)
+# admin.site.register(UserTour, UserTourAdmin)
+
+admin_site.register(Tour, TourAdmin)
+admin_site.register(Location)
+admin_site.register(TourImage, TourImageAdmin)
+admin_site.register(Post, PostAdmin)
+admin_site.register(User, UserAdmin)
+admin_site.register(UserTour, UserTourAdmin)

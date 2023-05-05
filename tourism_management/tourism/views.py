@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.views import Response
 
 from .paginators import TourPaginator, PostPaginator, CommentPaginator, TourOrderPaginator
-from .perms import CommentOwner
+from .perms import CommentOwner, Staff
 from .models import (
     Tour, TourImage, Post, User, TourComment, PostComment, Rating, PostLike, UserTour
 )
@@ -30,10 +30,23 @@ class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
 
         return queryset
 
+    @action(methods=['get'], detail=False, url_path='new')
+    def get_new(self, request):
+        tour = Tour.objects.filter(active=True).order_by('-created_date')[:8]
+
+        return Response(TourSerializer(tour, many=True).data)
 
 class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
+
+    def get_permissions(self):
+        if self.action in ['rating', 'get-rating', 'order']:
+            return [permissions.IsAuthenticated()]
+        if (self.action in ['comments']) and (self.request.method == 'POST'):
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
 
     @action(methods=['post'], detail=True, url_path='order')
     def order(self, request, pk):
@@ -53,12 +66,6 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         user_tour.save()
 
         return Response(UserTourSerializer(user_tour, context={'request': request}).data, status=status.HTTP_201_CREATED)
-
-    def get_permissions(self):
-        if self.action in ['rating', 'comments', 'get-rating']:
-            return [permissions.IsAuthenticated()]
-
-        return [permissions.AllowAny()]
 
     @action(methods=['get'], detail=True, url_path='image')
     def image(self, request, pk):
@@ -128,6 +135,12 @@ class PostViewSet(viewsets.ViewSet, generics.ListAPIView):
 
         return queryset
 
+    @action(methods=['get'], detail=False, url_path='new')
+    def get_new(self, request):
+        post = Post.objects.filter(active=True).order_by('-created_date')[:8]
+
+        return Response(PostSerializer(post, many=True).data)
+
 class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.UpdateAPIView,
                         generics.DestroyAPIView, generics.CreateAPIView):
     queryset = Post.objects.filter(active=True)
@@ -135,7 +148,9 @@ class PostDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.Upd
     pagination_class = CommentPaginator
 
     def get_permissions(self):
-        if self.action in ['like', 'comments', 'liked', 'change-password']:
+        if self.action in ['like', 'liked', 'change-password']:
+            return [permissions.IsAuthenticated()]
+        if (self.action in ['comments']) and (self.request.method == 'POST'):
             return [permissions.IsAuthenticated()]
 
         return [permissions.AllowAny()]
@@ -253,9 +268,6 @@ class TourCommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
 
         return queryset
 
-    def set_queryset(self, request):
-        id = request.data()
-
     """
     def list(self, request, *args, **kwargs):
         tour_id = request.data['tour_id']
@@ -287,6 +299,12 @@ class TourOrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retrieve
     serializer_class = UserTourSerializer
     pagination_class = TourOrderPaginator
     permission_classes = [permissions.IsAdminUser]
+
+    # def get_permissions(self):
+    #     if self.action in ['status']:
+    #         return [Staff()]
+    #
+    #     return [permissions.IsAdminUser]
 
     @action(methods=['put'], detail=True, url_path='status')
     def chang_status(self, request, pk):
