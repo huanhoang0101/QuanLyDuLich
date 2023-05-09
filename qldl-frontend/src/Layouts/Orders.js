@@ -9,6 +9,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import {Button, Col, Row } from 'react-bootstrap';
 import OrderHistoryBlock from '../Components/OrderBlockHIstory';
+
 function Orders() {
     const [orders, setOrders] = useState(null)
     const [page, setPage] = useState(1)
@@ -16,6 +17,7 @@ function Orders() {
     const [checkPrevPage, setCheckPrevPage] = useState(null);
     const nextPage = () => setPage(current => current + 1)
     const prevPage = () => setPage(current => current - 1)
+
     useEffect(() => {
         const loadOrders= async () => {
             try {

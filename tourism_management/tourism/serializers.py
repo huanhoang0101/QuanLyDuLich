@@ -100,11 +100,12 @@ class PostCommentSerializer(serializers.ModelSerializer):
 
 class UserTourSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    tour = TourSerializer()
 
     class Meta:
         model = UserTour
-        fields = ['number_adult', 'number_children', 'date_start', 'date_finish', 'total_price', 'status', 'user',
-                  'payment_method']
+        fields = ['id', 'number_adult', 'number_children', 'date_start', 'date_finish',
+                  'total_price', 'status', 'user', 'payment_method', 'tour']
 
 
 class LikedSerializer(serializers.ModelSerializer):
@@ -129,18 +130,3 @@ class TourRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tour
         fields = ['number_rate']
-
-
-"""
-class AuthorizedPostSerializer(PostSerializer):
-    liked = serializers.SerializerMethodField()
-
-    def get_liked(self, post):
-        request = self.context.get('request')
-        if request:
-            return post.like.filter(user=request.user, liked=True).exists()
-
-    class Meta:
-        model = PostSerializer.Meta.model
-        fields = PostSerializer.Meta.fields + ['liked']
-"""

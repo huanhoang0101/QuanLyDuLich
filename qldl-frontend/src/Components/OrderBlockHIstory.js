@@ -1,10 +1,22 @@
 import React, { state } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import API, { authAPI, endpoints } from "../configs/API"
+
 const OrderHistoryBlock = (props) => {
-    const updateStatus = (id) => {
-        
-    }
+    const MySwal = withReactContent(Swal)
+    console.log(props.order)
+    const updateStatus = async () => {
+        let e = `${endpoints['tour-order']}${props.order.id}/status/`
+        let res = await authAPI().post(e)
+        MySwal.fire(
+          'Success',
+          'Update Status Successfully',
+          'success'
+        )
+    } 
     const setStatus = (status) => {
         if(status == 1){
             return "Pending"
@@ -52,7 +64,7 @@ const OrderHistoryBlock = (props) => {
                     checkUpdate(props.order.status) 
                     ?
                     <Col xs={3} >
-                        <Button style={{float:"right"}} variant="success">Update Status</Button>
+                        <Button onClick={updateStatus} style={{float:"right"}} variant="success">Update Status</Button>
                     </Col>
                     :
                     <div></div>
