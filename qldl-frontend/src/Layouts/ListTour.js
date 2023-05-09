@@ -45,7 +45,7 @@ const ListTour = () => {
         return <Loading />
 
     if (tours.length === 0)
-        return <div className="alert alert-info m-1">KHÔNG có khóa học nào!!!</div>
+        return <div className="alert alert-info m-1">NO ANY TOUR!!!</div>
     return (
         <>
             <Form style={{marginTop: "20px", marginBottom: "-15px"}}>

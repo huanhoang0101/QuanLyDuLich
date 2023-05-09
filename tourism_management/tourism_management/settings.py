@@ -96,7 +96,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'qldulich',
         'USER': 'root',
-        'PASSWORD': '12345',
+        'PASSWORD': 'Az123456.',
         'HOST': ''
     }
 }

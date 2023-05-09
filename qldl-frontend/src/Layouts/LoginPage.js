@@ -37,6 +37,11 @@ function Login() {
     if (form.checkValidity() === false) {
       event.stopPropagation();
       setValidated(true);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Some fields went wrong',
+      })
       return;
     }
     
@@ -45,8 +50,8 @@ function Login() {
           let res = await API.post(endpoints['login'], {
               "username": username,
               "password": password,
-              "client_id": "nyjfbR3VQ2eUamolYqDG0v0J2ET0zmltCBDvJTd5",
-              "client_secret": "Qf5MhTbIAE2EaIWp8MX3vMOnW8qWlJokl854PRRQBHcY8Gwo2Gar04zknhWescNN6To9niXRiSDX9gcqmxhQNtjFBn83f59Q0f44ylEuyBqFu0SYlkoIxE1v0hvldJhO",
+              "client_id": "KTEkZ4qFAtL23kMXrJKHrLQDndhIl3xHQXrt1bQW",
+              "client_secret": "9TI5hBXXabNZHdCERQ5hRbweKGqwEZ1fMXxe3Tg6tLRWEYo1ZKdjN1nnpGV2nmhs0YyUXpGtEvwwLu8EWkeYpXtThxrSGKYH5XP2MU0P7BU7SJKXZK0bOCoTuSK6tUiv",
               "grant_type": "password"
           })
 
@@ -60,7 +65,11 @@ function Login() {
               "payload": user.data
           })
       } catch (ex) {
-          console.error(ex)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Somthing went wrong',
+        })
       } finally {
           setLoading(false)
       }

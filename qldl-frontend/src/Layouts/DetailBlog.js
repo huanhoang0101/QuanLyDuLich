@@ -20,11 +20,31 @@ function DetailBlog() {
     const [isLike, setIsLike] = useState(false);
     const [key, setKey] = useState('comment');
     const { blogId } = useParams();
-    const arrCommments = [1, 2, 3, 4, 5];
+    const [comments, setComments] = useState([]);
     const [numberLike, setNumberLike] = useState(0);
     const [blog, setBlog] = useState(null)
     const MySwal = withReactContent(Swal)
     const [comment, setComment] = useState('');
+    const getTotalLike = async () => {
+      try {
+        let e = `${endpoints['post']}${blogId}/total-like/`
+        let res = await API.get(e)
+        console.log(res.data.number_like)
+        setNumberLike(parseInt(res.data.number_like));
+        console.log(numberLike)
+      } catch (ex) {
+      }
+    }
+
+    const getCommmentList = async () => {
+      try {
+        let e = `${endpoints['post']}${blogId}/comments/`
+        let res = await authAPI().get(e)
+        setComments(res.data);
+      } catch (ex) {
+      }
+    }
+
     useEffect(() => {
       const loadBlog= async () => {
           try {
@@ -32,14 +52,31 @@ function DetailBlog() {
               let e = `${endpoints['post']}${blogId}`
               // navigate(`/posts/?page=${page}`)
               let res = await API.get(e)
-              console.log(res);
               setBlog(res.data)
           } catch (ex) {
           }
       }
+      const checkHadLike = async () => {
+        try {
+          let e = `${endpoints['post']}${blogId}/liked/`
+          // navigate(`/posts/?page=${page}`)
+          let res = await authAPI().get(e)
+          if(res.data.length != 0){
+            setIsLike(false);
+          }
+          setIsLike(res.data[0].liked);
+        } catch (ex) {
+        }
+      }
+      
+
       setBlog(null)
+
       setTimeout(function() {
         loadBlog()
+        checkHadLike()
+        getCommmentList()
+        getTotalLike()
           return;
       }, 500);
     }, [])
@@ -65,13 +102,14 @@ function DetailBlog() {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Something went wrong!',
+            text: ex,
           })
         } finally {
         }
       }
       if(comment != ""){
         process();
+        getCommmentList();
       } else {
         Swal.fire({
           icon: 'error',
@@ -88,27 +126,35 @@ function DetailBlog() {
         try {
             let e = `${endpoints['post']}${blogId}/like/`
             let res = await authAPI().post(e)
-            MySwal.fire(
-              'Success',
-              'Like Post Successfully?',
-              'success'
-            )
-  
+            if(!isLike){
+              MySwal.fire(
+                'Success',
+                'Like Post Successfully?',
+                'success'
+              )
+            } else {
+              MySwal.fire(
+                'Success',
+                'UnLike Post Successfully?',
+                'success'
+              )
+            }
+            setIsLike(!isLike);
         } catch (ex) {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Something went wrong!',
+            text: 'Please login before!',
           })
         } finally {
+          getTotalLike();
         }
       }
       process();
     }
     function handleClick(e) {
       changeLike(e);
-      setNumberLike(numberLike + (numberLike?-1:1));
-      setIsLike(!isLike);
+      // setNumberLike(numberLike + (numberLike?-1:1));
     }
 
     if (blog === null)
@@ -123,9 +169,10 @@ function DetailBlog() {
               <HTMLContent html={blog.content} />
             </div>
             <div style={{width:"100%", marginTop:"20px", marginBottom:"20px", margin:"20px"}}>
-                    <button className={ isLike ? 'active-like btn-like-custom' : 'btn-like-custom' } onClick={handleClick}>
-                        <i className='like-icon far fa-thumbs-up' ></i><span style={{fontSize:"20px", fontFamily: "monospace"}}>{numberLike}</span>
-                    </button>
+              <button className={ isLike ? 'active-like btn-like-custom' : 'btn-like-custom' } onClick={handleClick}>
+                  <i className='like-icon fa fa-thumbs-up' ></i>
+                  <span style={{fontSize:"20px", fontFamily: "monospace"}}>{numberLike}</span>
+              </button>
             </div>
             <Tabs
         id="controlled-tab"
@@ -141,16 +188,12 @@ function DetailBlog() {
         </Tab>
         <Tab eventKey="list-comments" title="List Comments">
           <Row style={{ margin:"20px", padding:"10px"}}>
-            {arrCommments.map(function(element) {
+            {comments.map(function(element) {
                               return (
-                                <CommentBlock/>
+                                <CommentBlock value={element}/>
                               );
                 })}
           </Row>
-          <div style={{margin: "20px", borderTop: "1px solid black", paddingTop: "20px"}}>
-            <PreviousButton/>
-            <NextButton/>
-          </div>
         </Tab>
       </Tabs>
         </>

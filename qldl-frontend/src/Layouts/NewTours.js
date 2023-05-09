@@ -6,37 +6,20 @@ import Tour from '../Components/TourBlock';
 import {
   Link
 } from 'react-router-dom';
-const NewTours = () => {
+const NewTours = (props) => {
 
-
+  console.log(props.tours);
   return (
     <>
       <h2 style={{margin:"0px", borderBottom: "1px solid gray", padding: "10px", backgroundColor: "goldenrod"}}>New Tours</h2>
       <Row>
-        <Col xs={3}>
-          <Tour/>
-        </Col>
-        <Col xs={3}>
-          <Tour/>
-        </Col>
-        <Col xs={3}>
-          <Tour/>
-        </Col>
-        <Col xs={3}>
-          <Tour/>
-        </Col>
-        <Col xs={3}>
-          <Tour/>
-        </Col>
-        <Col xs={3}>
-          <Tour/>
-        </Col>
-        <Col xs={3}>
-          <Tour/>
-        </Col>
-        <Col xs={3}>
-          <Tour/>
-        </Col>
+        {props.tours.map(function(element) {
+            return (
+                <Col xs={3}>
+                    <Tour tour={element}/>
+                </Col>
+            );
+        })}
       </Row>
       <div style={{width:"100%"}}>
         <div style={{width: "200px", margin: "auto"}}>

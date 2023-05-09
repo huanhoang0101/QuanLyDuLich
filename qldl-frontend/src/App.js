@@ -21,6 +21,7 @@ import { MyUserContext } from './configs/MyContext';
 import EditProfile from './Layouts/EditProfile';
 import EditPassword from './Layouts/EditPassword';
 import OrderHistory from './Layouts/OrderHistory';
+import Orders from './Layouts/Orders';
 import 'font-awesome/css/font-awesome.min.css';
 
 
@@ -45,6 +46,7 @@ function App() {
                   <Route path="/profile" element={<EditProfile/>} />
                   <Route path="/password" element={<EditPassword/>} />
                   <Route path="/history" element={<OrderHistory/>} />
+                  <Route path="/orders" element={<Orders/>} />
             </Routes>
           <Footer/>
         </div>

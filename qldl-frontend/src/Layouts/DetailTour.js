@@ -18,18 +18,51 @@ import Loading from "../Components/Loading"
 import HTMLContent from '../Plugins/HtmlContent';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import Modal from 'react-bootstrap/Modal';
+import Carousel from 'react-bootstrap/Carousel';
 
 const DetailTour = () => {
-
+  const [show, setShow] = useState(false);
   const [orderForm, setOrderForm] = React.useState(false);
   const [key, setKey] = useState('description');
   const { tourId } = useParams();
-  const arrPages = [1, 2, 3, 4, 5, 6,7,8,9,10,11,12];
-  const arrCommments = [1, 2, 3, 4, 5];
   const [tour, setTour] = useState(null)
+  const [ratingValue, setRatingValue] = useState(0)
+  const [AVGRating, setAVGRating] = useState(0)
   const [tourImage, setTourImage] = useState(null)
+  const [comments, setComments] = useState([]);
   const [comment, setComment] = useState('');
   const MySwal = withReactContent(Swal)
+  const [index, setIndex] = useState(0);
+
+  const handleSelect = (selectedIndex, e) => {
+    setIndex(selectedIndex);
+  };
+
+  const getRating = async () => {
+    try {
+      let e = `${endpoints['tour']}${tourId}/get-rating/`
+      let res = await authAPI().get(e)
+      setRatingValue(res.data[0].value);
+    } catch (ex) {
+    }
+  }
+  const getCommmentList = async () => {
+    try {
+      let e = `${endpoints['tour']}${tourId}/comments/`
+      let res = await authAPI().get(e)
+      setComments(res.data);
+    } catch (ex) {
+    }
+  }
+  const getAVGRating = async () => {
+    try {
+      let e = `${endpoints['tour']}${tourId}/average-rating/`
+      let res = await API.get(e)
+      setAVGRating(res.data.number_rate);
+    } catch (ex) {
+    }
+  }
 
   function formatCurrency(amount) {
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
@@ -38,7 +71,6 @@ const DetailTour = () => {
     const loadTour= async () => {
         try {
             let e = `${endpoints['tour']}${tourId}`
-            // navigate(`/posts/?page=${page}`)
             let res = await API.get(e)
             console.log(res);
             setTour(res.data)
@@ -48,11 +80,8 @@ const DetailTour = () => {
     const TourImage= async () => {
       try {
           let e = `${endpoints['tour']}${tourId}/image/`
-          // navigate(`/posts/?page=${page}`)
           let res = await API.get(e)
-          console.log(res);
           setTourImage(res.data)
-          console.log(res.data[0]);
       } catch (ex) {
       }
   }
@@ -60,7 +89,10 @@ const DetailTour = () => {
     setTimeout(function() {
       loadTour()
       TourImage()
-        return;
+      getRating()
+      getAVGRating()
+      getCommmentList()
+      return;
     }, 500);
   }, [])
 
@@ -84,13 +116,14 @@ const DetailTour = () => {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Something went wrong!',
+          text: 'Please login before!',
         })
       } finally {
       }
     }
     if(comment != ""){
       process();
+      getCommmentList();
     } else {
       Swal.fire({
         icon: 'error',
@@ -101,12 +134,38 @@ const DetailTour = () => {
     
   }
 
+  const changeRating = (value) => {
+    console.log(value)
+    const process = async () => {
+      try {
+          let e = `${endpoints['tour']}${tourId}/rating/`
+          let res = await authAPI().post(e,{
+            "rate": value
+          })
+          setRatingValue(value)
+          MySwal.fire(
+            'Success',
+            'Set Rating Successful',
+            'success'
+          )
+      } catch (ex) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Please login before!',
+        })
+      } finally {
+      }
+    }
+    process();
+  }
+
   if (tour === null)
     return <Loading />
 
   return (
     <>
-      <img style={{marginTop:"30px"}} src={slide2} width="100%" height="600px"/>
+      <img style={{marginTop:"30px"}} src={tour.image} width="100%" height="600px"/>
       <h2 style={{textAlign:"center", margin:"20px", borderBottom: "1px solid gray", padding:"20px"}}>
         {tour.name}
       </h2>
@@ -121,6 +180,7 @@ const DetailTour = () => {
                 <OrderTourForm
                   show={orderForm}
                   onHide={() => setOrderForm(false)}
+                  tour={tour}
                 />
               </div>
             </Col>
@@ -137,13 +197,18 @@ const DetailTour = () => {
           <DetailTourBlock value={"Số người tối đa : " + `${tour.max_person}` +" người"}/>
         </Col>
         <Col xs={8}>
+          <Row >
+            <Button style={{width: "400px", margin:"auto"}} variant="dark" onClick={() => setShow(true)}>
+              See All Image
+            </Button>
+          </Row>
           <Row>
             {tourImage.map(function(element) {
-                          return (
-                            <Col xs={4}>
-                              <TourImage image={slide2}/>
-                            </Col>
-                          );
+              return (
+                <Col xs={4}>
+                  <TourImage image={element.image}/>
+                </Col>
+              );
             })}
           </Row>
         </Col>
@@ -167,18 +232,6 @@ const DetailTour = () => {
         <Tab eventKey="action" title="Action">
           <Row style={{ padding:"30px", height:"250px"}}>
             <Col xs={8}>
-              <Row style={{marginLeft: "10px", width: "300px"}}>
-                <Col>
-                    <strong>
-                      Lượt thích : 
-                    </strong>
-                </Col>
-                <Col>
-                  <span>
-                    1 tỉ
-                  </span>
-                </Col>
-              </Row>
               <Row  style={{marginLeft: "10px", width: "300px", marginTop:"25px"}}>
                 <Col>
                   <strong>
@@ -187,7 +240,7 @@ const DetailTour = () => {
                 </Col>
                 <Col>
                   <span style={{fontSize:"35px"}}>
-                    3.5/5
+                    {AVGRating}/5
                   </span>
                 </Col>
               </Row>
@@ -197,7 +250,8 @@ const DetailTour = () => {
               <Rating
                 emptySymbol="fa fa-star-o fa-2x"
                 fullSymbol="fa fa-star fa-2x"
-                onChange={(value) => console.log(`Rated with value ${value}`)}
+                initialRating = {ratingValue}
+                onChange={(value) => changeRating(value)}
               />
             </Col>
           </Row>
@@ -209,18 +263,44 @@ const DetailTour = () => {
         </Tab>
         <Tab eventKey="list-comments" title="List Comments">
           <Row style={{ margin:"20px", padding:"10px"}}>
-            {arrCommments.map(function(element) {
+            {comments.map(function(element) {
                               return (
-                                <CommentBlock/>
+                                <CommentBlock value={element}/>
                               );
                 })}
           </Row>
-          <div style={{margin: "20px", borderTop: "1px solid black", paddingTop: "20px"}}>
-            <PreviousButton/>
-            <NextButton/>
-          </div>
         </Tab>
       </Tabs>
+      <Modal
+        show={show}
+        onHide={() => setShow(false)}
+        size='xl'
+        aria-labelledby="example-custom-modal-styling-title"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="example-custom-modal-styling-title">
+            Detail Images of Tour
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Carousel>
+            {tourImage.map(function(element) {
+              return (
+                // <Col xs={4}>
+                //   <TourImage image={element.image}/>
+                // </Col>
+                <Carousel.Item>
+                  <img
+                    className="d-block w-100"
+                    src={element.image}
+                    alt="First slide"
+                  />
+                </Carousel.Item>
+              );
+            })}
+          </Carousel>
+        </Modal.Body>
+      </Modal>
     </>
   );
 

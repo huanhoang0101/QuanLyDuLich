@@ -16,7 +16,7 @@ const Tour = (props) => {
   return (
     <>
         <Card style={{ width: '17.5rem' }} className="tour-card">
-          <Card.Img variant="top" src={img} />
+          <Card.Img variant="top" src={props.tour.image} />
           <Card.Body>
             <Card.Title>
               <Link style={{color:"black", textDecoration:"none"}} to={tourId}>
