@@ -130,18 +130,3 @@ class TourRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tour
         fields = ['number_rate']
-
-
-"""
-class AuthorizedPostSerializer(PostSerializer):
-    liked = serializers.SerializerMethodField()
-
-    def get_liked(self, post):
-        request = self.context.get('request')
-        if request:
-            return post.like.filter(user=request.user, liked=True).exists()
-
-    class Meta:
-        model = PostSerializer.Meta.model
-        fields = PostSerializer.Meta.fields + ['liked']
-"""

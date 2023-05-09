@@ -48,7 +48,6 @@ class Tour(BaseModel):
     background = CloudinaryField('image')
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
-    #    user = models.ManyToManyField(User, through='UserTour')
     def __str__(self):
         return self.name
 
@@ -59,7 +58,7 @@ class UserTour(BaseModel):
     date_start = models.DateTimeField()
     date_finish = models.DateTimeField()
     total_price = models.DecimalField(max_digits=10, decimal_places=0)
-    status = models.IntegerField(default=0)
+    status = models.IntegerField(default=1)
     tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=10)
