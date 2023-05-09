@@ -100,11 +100,12 @@ class PostCommentSerializer(serializers.ModelSerializer):
 
 class UserTourSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    tour = TourSerializer()
 
     class Meta:
         model = UserTour
         fields = ['number_adult', 'number_children', 'date_start', 'date_finish', 'total_price', 'status', 'user',
-                  'payment_method']
+                  'payment_method', 'tour']
 
 
 class LikedSerializer(serializers.ModelSerializer):

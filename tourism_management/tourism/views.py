@@ -17,18 +17,53 @@ from .serializers import (
 from django.db.models import Avg
 from django.contrib.auth import update_session_auth_hash
 
+def filter_by_max_person(max_person, queryset):
+    switcher = {
+        '1': queryset.filter(max_person__range=(1, 4)),
+        '2': queryset.filter(max_person__range=(5, 9)),
+        '3': queryset.filter(max_person__range=(10, 15)),
+        '4': queryset.filter(max_person__range=(15, 25))
+    }
+    return switcher.get(max_person)
+
+def filter_by_duration(duration, queryset):
+    switcher = {
+        '1': queryset.filter(duration__range=(2, 4)),
+        '2': queryset.filter(duration__range=(5, 8)),
+        '3': queryset.filter(duration__range=(9, 14)),
+        '4': queryset.filter(duration__range=(15, 30))
+    }
+    return switcher.get(duration)
+
+def filter_by_price(price, queryset):
+    switcher = {
+        '1': queryset.filter(adult_price__lt=5000000),
+        '2': queryset.filter(adult_price__range=(5000000, 8000000)),
+        '3': queryset.filter(adult_price__gt=8000000)
+    }
+    return switcher.get(price)
+
 # API Tour
 class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
-    queryset = Tour.objects.filter(active=True).order_by('-created_date')
+    queryset = Tour.objects.filter(active=True)
     serializer_class = TourSerializer
-    pagination_class = TourPaginator
+    #pagination_class = TourPaginator
 
     def filter_queryset(self, queryset):
         kw = self.request.query_params.get('kw')
+        price = self.request.query_params.get('price')
+        duration = self.request.query_params.get('duration')
+        max_person = self.request.query_params.get('max_person')
         if self.action.__eq__('list') and kw:
             queryset = queryset.filter(name__icontains=kw)
+        elif self.action.__eq__('list') and price:
+            queryset = filter_by_price(price, queryset)
+        elif self.action.__eq__('list') and duration:
+            queryset = filter_by_duration(duration, queryset)
+        elif self.action.__eq__('list') and max_person:
+            queryset = filter_by_max_person(max_person, queryset)
 
-        return queryset
+        return queryset.order_by('-created_date')
 
     @action(methods=['get'], detail=False, url_path='new')
     def get_new(self, request):
