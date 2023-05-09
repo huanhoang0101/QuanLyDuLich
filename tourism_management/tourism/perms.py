@@ -9,3 +9,4 @@ class CommentOwner(permissions.IsAuthenticated):
 class Staff(permissions.IsAuthenticated):
     def has_permission(self, request, view):
         return request.user and request.user.role == 1
+    #error
