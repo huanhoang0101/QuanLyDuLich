@@ -104,8 +104,8 @@ class UserTourSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserTour
-        fields = ['number_adult', 'number_children', 'date_start', 'date_finish', 'total_price', 'status', 'user',
-                  'payment_method', 'tour']
+        fields = ['id', 'number_adult', 'number_children', 'date_start', 'date_finish',
+                  'total_price', 'status', 'user', 'payment_method', 'tour']
 
 
 class LikedSerializer(serializers.ModelSerializer):
